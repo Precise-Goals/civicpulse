@@ -1,25 +1,12 @@
 import { useEffect, useState } from "react";
 import { fetchNews } from "../api/gnews";
 import { generateBlogPost } from "../api/gemini";
-import { saveBlog, fetchBlogs } from "../firebase/firestore";
+// import { saveBlog, fetchBlogs } from "../firebase/firestore";
 import BlogCard from "../components/blog/BlogCard";
 
 const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // Load generated blogs from Firestore
-  useEffect(() => {
-    const loadBlogs = async () => {
-      try {
-        const storedBlogs = await fetchBlogs();
-        setBlogs(storedBlogs);
-      } catch (err) {
-        console.error("Error loading blogs:", err);
-      }
-    };
-    loadBlogs();
-  }, []);
 
   // Admin: Generate & save blog from GNews
   const handleGenerateBlogs = async () => {
@@ -27,22 +14,26 @@ const BlogPage = () => {
     try {
       const newsArticles = await fetchNews("technology OR startups");
       const topArticles = newsArticles.slice(0, 6);
+
       console.log("Top articles fetched:", topArticles);
 
+      const generated = [];
 
       for (const article of topArticles) {
         const content = article.content || article.description || article.title;
-        const blog = await generateBlogPost(content);
+        const blogContent = await generateBlogPost(content);
 
-        await saveBlog({
+        generated.push({
+          id: crypto.randomUUID(), // fake ID for rendering
           title: article.title,
-          content: blog,
-          url: article.url,
+          content: blogContent,
+          original_news_url: article.url,
+          generated_date: new Date().toISOString(),
+          author: "Gemini AI",
         });
       }
 
-      const updatedBlogs = await fetchBlogs();
-      setBlogs(updatedBlogs);
+      setBlogs(generated); // Show blogs without saving
     } catch (err) {
       console.error("Blog generation failed:", err);
     } finally {
@@ -62,9 +53,9 @@ const BlogPage = () => {
           {loading ? "Generating..." : "Generate Blogs"}
         </button>
       </div>
-
+      
       {blogs.length === 0 ? (
-        <p className="text-gray-600">Please wait untill blogs are generating</p>
+        <p className="text-gray-600">No blogs generated yet.</p>
       ) : (
         <div className="grid gap-6">
           {blogs.map((blog) => (
