@@ -26,7 +26,9 @@ const BlogPage = () => {
     setLoading(true);
     try {
       const newsArticles = await fetchNews("technology OR startups");
-      const topArticles = newsArticles.slice(0, 2);
+      const topArticles = newsArticles.slice(0, 6);
+      console.log("Top articles fetched:", topArticles);
+
 
       for (const article of topArticles) {
         const content = article.content || article.description || article.title;
@@ -62,7 +64,7 @@ const BlogPage = () => {
       </div>
 
       {blogs.length === 0 ? (
-        <p className="text-gray-600">No blogs available yet.</p>
+        <p className="text-gray-600">Please wait untill blogs are generating</p>
       ) : (
         <div className="grid gap-6">
           {blogs.map((blog) => (
