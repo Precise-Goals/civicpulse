@@ -1,11 +1,14 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import HomePage from "./pages/HomePage";
 import BlogPage from "./pages/BlogPage";
 import ChatPage from "./pages/ChatPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
+import { useAuth } from "./hooks/useAuth";
+import BlogDetail from "./components/blog/BlogDetail";
+import Navbar from "./components/common/Navbar";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -21,10 +24,11 @@ const ProtectedRoute = ({ children }) => {
 const App = () => (
   <AuthProvider>
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/blogs" element={<BlogPage />} />
-        <Route path="/blogs/:id" element={<BlogPage />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
         <Route
           path="/chat"
           element={

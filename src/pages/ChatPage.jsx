@@ -21,7 +21,6 @@ const ChatPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
       <div className="p-4">
         <ChatWindow userId={user.uid} />
       </div>

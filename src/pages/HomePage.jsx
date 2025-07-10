@@ -4,7 +4,6 @@ import Navbar from "../components/common/Navbar";
 
 const HomePage = () => (
   <div className="min-h-screen bg-gray-100">
-    <Navbar />
     <div className="max-w-4xl mx-auto p-4 text-center">
       <h1 className="text-3xl font-bold mb-6">Welcome to News Blog</h1>
       <p className="text-lg mb-4">
