@@ -1,41 +1,20 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase/config";
+import { useParams, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
 const BlogDetail = () => {
   const { id } = useParams();
-  const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { state } = useLocation();
+  const blog = state?.blog;
 
-  useEffect(() => {
-    const loadBlog = async () => {
-      try {
-        const blogRef = doc(db, "blogs", id);
-        const blogSnap = await getDoc(blogRef);
-
-        if (blogSnap.exists()) {
-          setBlog({ id: blogSnap.id, ...blogSnap.data() });
-        } else {
-          console.error("Blog not found");
-        }
-      } catch (err) {
-        console.error("Failed to load blog", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadBlog();
-  }, [id]);
-
-  if (loading) return <p className="text-center mt-4">Loading blog...</p>;
   if (!blog)
-    return <p className="text-center mt-4 text-red-600">Blog not found.</p>;
+    return (
+      <p className="text-center mt-4 text-red-600">
+        Blog not available. Try returning to the homepage.
+      </p>
+    );
 
   const date = blog.generated_date
-    ? new Date(blog.generated_date.seconds * 1000).toLocaleDateString()
+    ? new Date(blog.generated_date).toLocaleDateString()
     : "Unknown date";
 
   return (

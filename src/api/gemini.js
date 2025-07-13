@@ -34,8 +34,9 @@ export const generateBlogPost = async (articleContent) => {
     const data = await response.json();
     return data.candidates?.[0]?.content?.parts[0]?.text || "No content.";
   } catch (error) {
-    console.error("Error generating blog post:", error);
-    return "⚠️ Failed to generate blog. Please try again later.";
+    console.log("Error generating blog post:", error);
+    console.log("Failed to Generate the Blog, Please continue with the original article content.");
+    return articleContent;
   }
 };
 
@@ -52,7 +53,7 @@ export const sendMessage = async (message) => {
           {
             parts: [
               {
-                text: `You are a helpful assistant. The user is asking: '${message}'. Respond in the same language, keeping the tone friendly and concise.`,
+                text: `You are a helpful News assistant. The user is asking: '${message}'. Respond in the same language, keeping the tone friendly and concise. BE knowledgable to the topic and provide accurate information.`,    
               },
             ],
           },

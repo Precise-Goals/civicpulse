@@ -13,7 +13,7 @@ const BlogPage = () => {
     setLoading(true);
     try {
       const newsArticles = await fetchNews("technology OR startups");
-      const topArticles = newsArticles.slice(0, 6);
+      const topArticles = newsArticles.slice(1, 7);
 
       console.log("Top articles fetched:", topArticles);
 
@@ -27,6 +27,8 @@ const BlogPage = () => {
           id: crypto.randomUUID(), // fake ID for rendering
           title: article.title,
           content: blogContent,
+          image: article.image,
+          source: article.source.name,  
           original_news_url: article.url,
           generated_date: new Date().toISOString(),
           author: "Gemini AI",
