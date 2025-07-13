@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
       <div className="text-lg font-bold">
-        <Link to="/">News Blog</Link>
+        <Link to="/">Civicpulse</Link>
       </div>
       <div className="flex space-x-4">
         <Link to="/" className="hover:text-blue-300">
