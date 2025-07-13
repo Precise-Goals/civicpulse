@@ -14,11 +14,11 @@ const Navbar = () => {
         <Link to="/" className="hover:text-blue-300">
           Home
         </Link>
-        <Link to="/blogs" className="hover:text-blue-300">
-          Blogs
-        </Link>
         {user ? (
           <>
+            <Link to="/blogs" className="hover:text-blue-300">
+              Blogs
+            </Link>
             <Link to="/chat" className="hover:text-blue-300">
               Chat
             </Link>

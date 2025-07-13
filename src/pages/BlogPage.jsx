@@ -54,12 +54,12 @@ const BlogPage = () => {
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           disabled={loading}
         >
-          {loading ? "Generating..." : "Generate Blogs"}
+          {loading ? "Generating" : "Start Generating Insightful AI Blogs"}
         </button>
       </div>
       
       {blogs.length === 0 ? (
-        <p className="text-gray-600">No blogs generated yet.</p>
+        <p className="text-gray-600"></p>
       ) : (
         <div className="grid gap-6">
           {blogs.map((blog) => (
