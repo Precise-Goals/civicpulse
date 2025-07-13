@@ -1,4 +1,5 @@
 // src/pages/DashboardPage.jsx
+
 import React, { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 import { getAuth } from "firebase/auth";
@@ -12,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { groupTimestampsByHour } from "../utils/timeUtils";
 
 export default function DashboardPage() {
   const auth = getAuth();
@@ -22,55 +24,55 @@ export default function DashboardPage() {
   const [blogCount, setBlogCount] = useState(0);
   const [chatLast30SecCount, setChatLast30SecCount] = useState(0);
   const [blogLast30SecCount, setBlogLast30SecCount] = useState(0);
-
+  const [chatHistory, setChatHistory] = useState([]);
+  const [blogHistory, setBlogHistory] = useState([]);
   const [review, setReview] = useState("");
   const [savedReview, setSavedReview] = useState(null);
-  const [loadingCounts, setLoadingCounts] = useState(true);
   const [loadingReview, setLoadingReview] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const [chatHistory, setChatHistory] = useState([]);
-  const [blogHistory, setBlogHistory] = useState([]);
-
+  // ✅ Fetch usage counts & hourly breakdowns
   useEffect(() => {
     if (!user) return;
 
-    const userRef = ref(db, `users/${user.uid}`);
-    const unsubscribe = onValue(
-      userRef,
-      (snapshot) => {
+    const fields = ["chat", "blog"];
+    const now = Date.now();
+    const THIRTY_SECONDS = 30 * 1000;
+
+    fields.forEach((field) => {
+      const countRef = ref(db, `users/${user.uid}/${field}Count`);
+      const tsRef = ref(db, `users/${user.uid}/${field}Timestamps`);
+
+      onValue(countRef, (snapshot) => {
+        const count = snapshot.val() || 0;
+        if (field === "chat") setChatCount(count);
+        else setBlogCount(count);
+      });
+
+      onValue(tsRef, (snapshot) => {
         const data = snapshot.val() || {};
-        setChatCount(data.chatCount || 0);
-        setBlogCount(data.blogCount || 0);
+        const hourly = groupTimestampsByHour(data);
+        const recent = Object.keys(data).filter(
+          (ts) => now - ts < THIRTY_SECONDS
+        );
 
-        // Mock graph history
-        setChatHistory([
-          { date: "2025-07-11", count: data.chatCount || 0 },
-          { date: "2025-07-12", count: data.chatCount || 0 },
-          { date: "2025-07-13", count: data.chatCount || 0 },
-        ]);
-        setBlogHistory([
-          { date: "2025-07-11", count: data.blogCount || 0 },
-          { date: "2025-07-12", count: data.blogCount || 0 },
-          { date: "2025-07-13", count: data.blogCount || 0 },
-        ]);
+        if (field === "chat") {
+          setChatHistory(hourly);
+          setChatLast30SecCount(recent.length);
+        } else {
+          setBlogHistory(hourly);
+          setBlogLast30SecCount(recent.length);
+        }
+      });
+    });
+  }, [user]);
 
-        setLoadingCounts(false);
-      },
-      (error) => {
-        console.error("Failed to load counts:", error);
-        setLoadingCounts(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [user, db]);
-
+  // ✅ Load review
   useEffect(() => {
     if (!user) return;
 
     const reviewRef = ref(db, `reviews/${user.uid}`);
-    const unsubscribe = onValue(
+    onValue(
       reviewRef,
       (snapshot) => {
         const data = snapshot.val();
@@ -88,34 +90,9 @@ export default function DashboardPage() {
         setLoadingReview(false);
       }
     );
-
-    return () => unsubscribe();
-  }, [user, db]);
-
-  // 🔁 Live 30-second metric count
-  useEffect(() => {
-    if (!user) return;
-
-    const now = Date.now();
-    const THIRTY_SECONDS = 30 * 1000;
-    const fields = ["chat", "blog"];
-
-    fields.forEach((field) => {
-      const tsRef = ref(db, `users/${user.uid}/${field}Timestamps`);
-      onValue(tsRef, (snapshot) => {
-        const data = snapshot.val() || {};
-        const recent = Object.keys(data).filter(
-          (ts) => now - ts < THIRTY_SECONDS
-        );
-        if (field === "chat") {
-          setChatLast30SecCount(recent.length);
-        } else {
-          setBlogLast30SecCount(recent.length);
-        }
-      });
-    });
   }, [user]);
 
+  // ✅ Submit review
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!user) return alert("Please login first.");
@@ -135,79 +112,83 @@ export default function DashboardPage() {
     }
   };
 
-  if (!user) return <p>Please login to view dashboard.</p>;
+  if (!user) return <p>Please login to view your dashboard.</p>;
 
   return (
-    <div style={{ maxWidth: 700, margin: "20px auto", padding: 20 }}>
-      <h1>Dashboard for {user.displayName || user.email}</h1>
+    <div style={{ maxWidth: 800, margin: "20px auto", padding: 20 }}>
+      <h1 className="text-2xl font-bold mb-2">
+        Dashboard for {user.displayName || user.email}
+      </h1>
 
-      <section style={{ marginBottom: 30 }}>
-        <h2>Usage Metrics</h2>
-        {loadingCounts ? (
-          <p>Loading counts...</p>
-        ) : (
-          <>
-            <ul>
-              <li>
-                Blog Posts Generated: <strong>{blogCount}</strong>
-              </li>
-              <li>
-                Chat Messages Sent: <strong>{chatCount}</strong>
-              </li>
-            </ul>
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">📊 Usage Stats</h2>
+        <ul className="text-sm space-y-1">
+          <li>✅ Blog Posts: {blogCount}</li>
+          <li>💬 Chat Messages: {chatCount}</li>
+        </ul>
+      </section>
 
-            <div style={{ height: 300, marginTop: 30 }}>
-              <h3>Blog Posts Over Time</h3>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={blogHistory}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis domain={[0, 50]}/>
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+      <section className="mb-10">
+        <h3 className="text-lg font-semibold">📈 Blog Usage (Hourly)</h3>
+        <div style={{ height: 300 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={blogHistory}>
+              <CartesianGrid strokeDasharray="3 5" />
+              <XAxis dataKey="hour" />
+              <YAxis allowDecimals={false} domain={[0,75]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#8884d8"
+                name="Blogs"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-            <div style={{ height: 300, marginTop: 30 }}>
-              <h3>Chat Messages Over Time</h3>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chatHistory}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis domain={[0,50]}/>
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="count" stroke="#82ca9d" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </>
-        )}
+        <h3 className="text-lg font-semibold mt-8">📈 Chat Usage (Hourly)</h3>
+        <div style={{ height: 300 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chatHistory}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" />
+              <YAxis allowDecimals={false} domain={[0,50]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#34d399"
+                name="Chats"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </section>
 
       <section>
-        <h2>Your Review</h2>
+        <h2 className="text-lg font-semibold mb-2">📝 Your Review</h2>
         {loadingReview ? (
           <p>Loading review...</p>
         ) : (
           <form onSubmit={handleSubmitReview}>
             <textarea
               rows={4}
+              className="w-full border p-2 rounded"
               value={review}
               onChange={(e) => setReview(e.target.value)}
               placeholder="Write your review..."
               disabled={submitting}
-              style={{ width: "100%", padding: 10 }}
             />
             <button
               type="submit"
+              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded"
               disabled={submitting}
-              style={{ marginTop: 10, padding: "8px 16px" }}
             >
               {submitting
-                ? "Saving..."
+                ? "Submitting..."
                 : savedReview
                 ? "Update Review"
                 : "Submit Review"}

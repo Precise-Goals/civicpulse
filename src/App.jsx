@@ -22,27 +22,54 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+
+    <Route
+      path="/blogs"
+      element={
+        <ProtectedRoute>
+          <BlogPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/blogs/:id"
+      element={
+        <ProtectedRoute>
+          <BlogDetail />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/chat"
+      element={
+        <ProtectedRoute>
+          <ChatPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/dashboard"
+      element={
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/signup" element={<SignUpPage />} />
+    <Route path="*" element={<Navigate to="/" />} />
+  </Routes>
+);
+
 const App = () => (
   <AuthProvider>
     <BrowserRouter>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/blogs" element={<BlogPage />} />
-        <Route path="/blogs/:id" element={<BlogDetail />} />
-        <Route
-          path="/chat"
-          element={
-            <ProtectedRoute>
-              <ChatPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   </AuthProvider>
 );
