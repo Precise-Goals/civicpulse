@@ -11,12 +11,25 @@ const Navbar = () => {
         <Link to="/">News Blog</Link>
       </div>
       <div className="flex space-x-4">
-        <Link to="/" className="hover:text-blue-300">Home</Link>
-        <Link to="/blogs" className="hover:text-blue-300">Blogs</Link>
+        <Link to="/" className="hover:text-blue-300">
+          Home
+        </Link>
+        <Link to="/blogs" className="hover:text-blue-300">
+          Blogs
+        </Link>
         {user ? (
-          <Link to="/chat" className="hover:text-blue-300">Chat</Link>
+          <>
+            <Link to="/chat" className="hover:text-blue-300">
+              Chat
+            </Link>
+            <Link to="/dashboard" className="hover:text-blue-300">
+              Dashboard
+            </Link>
+          </>
         ) : (
-          <Link to="/login" className="hover:text-blue-300">Login</Link>
+          <Link to="/login" className="hover:text-blue-300">
+            Login
+          </Link>
         )}
       </div>
     </nav>

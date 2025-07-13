@@ -1,4 +1,5 @@
-import { MAX_BLOG_LENGTH } from "../utils/constants";
+// src/api/gemini.js
+import { getDatabase, ref, get, set } from "firebase/database";
 import { fetchWeather } from "./weather";
 import { fetchStartupTrends } from "./startups";
 import { fetchStockPrices } from "./stocks";
@@ -6,7 +7,23 @@ import { fetchStockPrices } from "./stocks";
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const API = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-export const generateBlogPost = async (articleContent) => {
+async function incrementUserCount(userId, field) {
+  if (!userId) return;
+  const db = getDatabase();
+
+  // 1. Increment the total count
+  const countRef = ref(db, `users/${userId}/${field}Count`);
+  const snapshot = await get(countRef);
+  const currentCount = snapshot.exists() ? snapshot.val() : 0;
+  await set(countRef, currentCount + 1);
+
+  // 2. Log timestamp for last 30 sec metrics
+  const timestamp = Date.now();
+  const tsRef = ref(db, `users/${userId}/${field}Timestamps/${timestamp}`);
+  await set(tsRef, true);
+}
+
+export const generateBlogPost = async (articleContent, userId) => {
   try {
     const response = await fetch(API, {
       method: "POST",
@@ -14,11 +31,7 @@ export const generateBlogPost = async (articleContent) => {
       body: JSON.stringify({
         contents: [
           {
-            parts: [
-              {
-                text: `Write a blog about: ${articleContent}`,
-              },
-            ],
+            parts: [{ text: `Write a blog about: ${articleContent}` }],
           },
         ],
       }),
@@ -26,31 +39,26 @@ export const generateBlogPost = async (articleContent) => {
 
     if (!response.ok) {
       const err = await response.json();
-      console.error("Gemini API error:", err);
       throw new Error(err.error?.message || "Failed to generate blog post");
     }
 
     const data = await response.json();
-    return data.candidates?.[0]?.content?.parts[0]?.text || "No content.";
+    await incrementUserCount(userId, "blog");
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No content.";
   } catch (error) {
-    console.log("Error generating blog post:", error);
-    console.log(
-      "Failed to Generate the Blog, Please continue with the original article content."
-    );
+    console.error("Error generating blog post:", error);
     return articleContent;
   }
 };
 
-export const sendMessage = async (message) => {
+export const sendMessage = async (message, userId) => {
   try {
     let context = "";
 
-    // 💡 Dynamically enrich context with real-time info
     if (/weather|temperature|rain|climate/i.test(message)) {
       const weather = await fetchWeather("Pune");
       context += `Weather in ${weather.city}: ${weather.temperature}°C, ${weather.condition}, humidity ${weather.humidity}%, wind ${weather.windSpeed}km/h.\n\n`;
     }
-
 
     if (/startup|launch|product|founder/i.test(message)) {
       const startupNews = await fetchStartupTrends();
@@ -77,18 +85,14 @@ export const sendMessage = async (message) => {
 ${context}
 You are a helpful News assistant. The user is asking: '${message}'.
 Respond in the same language, keeping the tone friendly and concise.
-Be knowledgeable to the topic and provide accurate information.
+Be knowledgeable and accurate.
 `;
 
     const response = await fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: fullPrompt.trim() }],
-          },
-        ],
+        contents: [{ parts: [{ text: fullPrompt.trim() }] }],
         safetySettings: [
           {
             category: "HARM_CATEGORY_DANGEROUS_CONTENT",
@@ -112,24 +116,20 @@ Be knowledgeable to the topic and provide accurate information.
           topK: 40,
           topP: 0.95,
           maxOutputTokens: 512,
-          stopSequences: [],
         },
       }),
     });
 
     if (!response.ok) {
       const err = await response.json();
-      console.error("Gemini API Error:", err);
-      throw new Error("Failed to process chat message");
+      throw new Error(err.error?.message || "Failed to generate response");
     }
 
     const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    // console.log("Chat response:", text);
-    return text || "No response.";
+    await incrementUserCount(userId, "chat");
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
   } catch (error) {
-    console.error("Error processing chat message:", error);
+    console.error("Error sending message:", error);
     throw error;
   }
 };

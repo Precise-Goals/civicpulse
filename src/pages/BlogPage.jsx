@@ -3,10 +3,12 @@ import { fetchNews } from "../api/gnews";
 import { generateBlogPost } from "../api/gemini";
 // import { saveBlog, fetchBlogs } from "../firebase/firestore";
 import BlogCard from "../components/blog/BlogCard";
+import { useAuth } from "../hooks/useAuth";
 
 const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   // Admin: Generate & save blog from GNews
   const handleGenerateBlogs = async () => {
@@ -21,7 +23,7 @@ const BlogPage = () => {
 
       for (const article of topArticles) {
         const content = article.content || article.description || article.title;
-        const blogContent = await generateBlogPost(content);
+        const blogContent = await generateBlogPost(content,user.uid);
 
         generated.push({
           id: crypto.randomUUID(), // fake ID for rendering

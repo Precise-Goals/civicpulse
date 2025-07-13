@@ -9,12 +9,14 @@ import {
   fetchThreadMessages,
 } from "../../firebase/chatThreads";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "../../hooks/useAuth";
 
 const ChatWindow = ({ userId, threadId, onNewThread }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const { user } = useAuth();
 
   // Fetch messages when threadId changes
   useEffect(() => {
@@ -54,7 +56,7 @@ const ChatWindow = ({ userId, threadId, onNewThread }) => {
     try {
       await saveMessageToThread(userId, currentThreadId, userMessage, isFirst);
 
-      const aiText = await sendMessage(messageText);
+      const aiText = await sendMessage(messageText,user.uid);
       const aiMessage = {
         text: aiText,
         sender: "ai",

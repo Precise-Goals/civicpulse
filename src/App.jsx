@@ -9,6 +9,7 @@ import SignUpPage from "./pages/SignUpPage";
 import { useAuth } from "./hooks/useAuth";
 import BlogDetail from "./components/blog/BlogDetail";
 import Navbar from "./components/common/Navbar";
+import DashboardPage from "./pages/DashboardPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -40,6 +41,7 @@ const App = () => (
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>
