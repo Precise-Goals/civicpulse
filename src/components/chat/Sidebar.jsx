@@ -40,7 +40,7 @@ const Sidebar = ({ userId, currentThreadId, onSelectThread, onNewChat }) => {
           onClick={onNewChat}
           className="text-sm px-2 py-1 border rounded hover:bg-gray-100"
         >
-          + New
+          New Chat
         </button>
       </div>
 

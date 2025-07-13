@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Message from "./Message";
 import Button from "../common/Button";
 import ReactMarkdown from "react-markdown";
@@ -9,23 +9,27 @@ import {
   fetchThreadMessages,
 } from "../../firebase/chatThreads";
 import { v4 as uuidv4 } from "uuid";
-import { useAuth } from "../../hooks/useAuth";
 
 const ChatWindow = ({ userId, threadId, onNewThread }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const { user } = useAuth();
+  const [localThreadId, setLocalThreadId] = useState(threadId);
 
-  // Fetch messages when threadId changes
+  // Update localThreadId when a new one is passed from props
   useEffect(() => {
-    if (!userId || !threadId) return;
-    const unsubscribe = fetchThreadMessages(userId, threadId, setMessages);
-    return () => unsubscribe();
-  }, [userId, threadId]);
+    setLocalThreadId(threadId);
+  }, [threadId]);
 
-  // Scroll to latest message
+  // Load messages when threadId exists
+  useEffect(() => {
+    if (!userId || !localThreadId) return;
+    const unsubscribe = fetchThreadMessages(userId, localThreadId, setMessages);
+    return () => unsubscribe();
+  }, [userId, localThreadId]);
+
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -42,21 +46,21 @@ const ChatWindow = ({ userId, threadId, onNewThread }) => {
       timestamp: new Date(),
     };
 
-    let currentThreadId = threadId;
+    let currentThreadId = localThreadId;
 
-    // New thread logic
-    const isFirst = !currentThreadId;
-    if (isFirst) {
+    const isNew = !currentThreadId;
+    if (isNew) {
       currentThreadId = uuidv4();
-      if (onNewThread) onNewThread(currentThreadId); // Notify parent
+      setLocalThreadId(currentThreadId); // For internal reference
+      if (onNewThread) onNewThread(currentThreadId); // Let parent know
     }
 
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      await saveMessageToThread(userId, currentThreadId, userMessage, isFirst);
+      await saveMessageToThread(userId, currentThreadId, userMessage, isNew);
 
-      const aiText = await sendMessage(messageText,user.uid);
+      const aiText = await sendMessage(messageText, userId);
       const aiMessage = {
         text: aiText,
         sender: "ai",

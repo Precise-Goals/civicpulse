@@ -133,7 +133,7 @@ export default function DashboardPage() {
         <div style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={blogHistory}>
-              <CartesianGrid strokeDasharray="3 5" />
+              <CartesianGrid strokeDasharray="4 4" />
               <XAxis dataKey="hour" />
               <YAxis allowDecimals={false} domain={[0,75]} />
               <Tooltip />

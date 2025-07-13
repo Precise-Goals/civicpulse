@@ -1,25 +1,30 @@
-import Sidebar from "../components/chat/Sidebar";
+import React, { useState } from "react";
 import ChatWindow from "../components/chat/ChatWindow";
-import { useState } from "react";
-import { useAuth } from "../hooks/useAuth"; // Assuming you have an auth hook
+import Sidebar from "../components/chat/Sidebar";
+import { useAuth } from "../hooks/useAuth";
 
-export default function ChatPage() {
+const ChatPage = () => {
   const { user } = useAuth();
-  const [activeThreadId, setActiveThreadId] = useState(null);
-  const handleNewChat = () => {
-    setActiveThreadId(null); // triggers new thread creation in ChatWindow
-  };
-  if (!user) return <p>Loading...</p>;
+  const [threadId, setThreadId] = useState(null);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       <Sidebar
         userId={user.uid}
-        currentThreadId={activeThreadId}
-        onSelectThread={setActiveThreadId}
-        onNewChat={handleNewChat}
+        currentThreadId={threadId}
+        onSelectThread={setThreadId}
+        onNewChat={() => setThreadId(null)}
       />
-      <ChatWindow userId={user.uid} threadId={activeThreadId} />
+      <div className="flex-1">
+        <ChatWindow
+          userId={user.uid}
+          key={threadId || "new"}
+          threadId={threadId}
+          onNewThread={(newId) => setThreadId(newId)}
+        />
+      </div>
     </div>
   );
-}
+};
+
+export default ChatPage;
