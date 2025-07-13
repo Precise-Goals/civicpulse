@@ -18,11 +18,12 @@ const BlogDetail = () => {
     : "Unknown date";
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8" key = {id}>
       <h1 className="text-3xl font-bold mb-2">{blog.title}</h1>
       <p className="text-sm text-gray-500 mb-4">
         {date} {blog.author && `· by ${blog.author}`}
       </p>
+      <img src={blog.image} alt="" />
       <div className="prose prose-sm sm:prose lg:prose-lg">
         <ReactMarkdown>{blog.content}</ReactMarkdown>
       </div>

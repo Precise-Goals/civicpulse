@@ -1,31 +1,25 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import Navbar from "../components/common/Navbar";
+import Sidebar from "../components/chat/Sidebar";
 import ChatWindow from "../components/chat/ChatWindow";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth"; // Assuming you have an auth hook
 
-const ChatPage = () => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+export default function ChatPage() {
+  const { user } = useAuth();
+  const [activeThreadId, setActiveThreadId] = useState(null);
+  const handleNewChat = () => {
+    setActiveThreadId(null); // triggers new thread creation in ChatWindow
+  };
+  if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="p-4">
-        <ChatWindow userId={user.uid} />
-      </div>
+    <div className="flex h-screen">
+      <Sidebar
+        userId={user.uid}
+        currentThreadId={activeThreadId}
+        onSelectThread={setActiveThreadId}
+        onNewChat={handleNewChat}
+      />
+      <ChatWindow userId={user.uid} threadId={activeThreadId} />
     </div>
   );
-};
-
-export default ChatPage;
+}
