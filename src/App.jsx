@@ -11,6 +11,7 @@ import BlogDetail from "./components/blog/BlogDetail";
 import Navbar from "./components/common/Navbar";
 import DashboardPage from "./pages/DashboardPage";
 import ReviewPage from "./pages/ReviewPage";
+import "./App.css"; 
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -71,6 +72,7 @@ const App = () => (
   <AuthProvider>
     <BrowserRouter>
       <Navbar />
+      <hr className="navlin" />
       <AppRoutes />
     </BrowserRouter>
   </AuthProvider>
