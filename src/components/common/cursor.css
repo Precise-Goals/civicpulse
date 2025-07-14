@@ -1,0 +1,24 @@
+.cursor {
+  --size: 12px;
+  mix-blend-mode: difference;
+  background: white;
+  position: fixed;
+  width: var(--size);
+  height: var(--size);
+  top: calc(var(--size) / 2 * -1);
+  left: calc(var(--size) / 2 * -1);
+  pointer-events: none;
+  border-radius: 100%;
+  z-index: 45;
+  filter: invert(1);
+  background-color: black;
+  transition: all 0.1s ease; /* Ensure transition time is enough to see the effect */
+}
+
+.cursor.hover {
+  --sz: 13px;
+  width: var(--sz);
+  height: var(--sz);
+  top: calc(var(--sz) / 2 * -1);
+  left: calc(var(--sz) / 2 * -1);
+}

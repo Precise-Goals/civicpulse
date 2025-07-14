@@ -21,30 +21,30 @@ const Navbar = () => {
         <Link to="/">CivicPulse</Link>
       </div>
       <div className="flex space-x-4">
-        <Link to="/" className="hover:text-blue-300">
+        <Link to="/" className="c hover:text-blue-300">
           Home
         </Link>
-        <Link to="/blogs" className="hover:text-blue-300">
+        <Link to="/blogs" className=" c hover:text-blue-300">
           Blogs
         </Link>
         {user && (
-          <Link to="/chat" className="hover:text-blue-300">
+          <Link to="/chat" className=" c hover:text-blue-300">
             Chat
           </Link>
         )}
         {user && (
-          <Link to="/dashboard" className="hover:text-blue-300">
+          <Link to="/dashboard" className=" c hover:text-blue-300">
             Dashboard
           </Link>
         )}
         {!user ? (
-          <Link to="/login" className="hover:text-blue-300">
+          <Link to="/login" className=" c hover:text-blue-300">
             Login
           </Link>
         ) : (
           <button
             onClick={handleLogout}
-            className="hover:text-red-400 bg-transparent border-none focus:outline-none"
+            className=" c hover:text-red-400 bg-transparent border-none focus:outline-none"
           >
             Logout
           </button>

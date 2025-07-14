@@ -9,6 +9,7 @@ const HomePage = () => (
   <>
     <div className="Hero">
       <div className="conten" style={{ position: "relative", overflow: "hidden" }}>
+        <p className="sh">stay updated with !</p>
         <h1>CIVICPULSE</h1>
         <img src="spark.png" alt="" />
         <h4>Busy but curious?</h4>

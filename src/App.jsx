@@ -11,7 +11,10 @@ import BlogDetail from "./components/blog/BlogDetail";
 import Navbar from "./components/common/Navbar";
 import DashboardPage from "./pages/DashboardPage";
 import ReviewPage from "./pages/ReviewPage";
-import "./App.css"; 
+import "./App.css";
+import Footer from "./components/common/Footer";
+import { Cursor } from "./components/common/Cursor";
+import "./index.css";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -70,10 +73,14 @@ const AppRoutes = () => (
 
 const App = () => (
   <AuthProvider>
+    {/* <Cursor /> */}
     <BrowserRouter>
-      <Navbar />
-      <hr className="navlin" />
-      <AppRoutes />
+      <div className="wrap" style={{ padding: "4% 8%" }}>
+        <Navbar />
+        <hr className="navlin" />
+        <AppRoutes />
+      </div>
+      <Footer />
     </BrowserRouter>
   </AuthProvider>
 );
