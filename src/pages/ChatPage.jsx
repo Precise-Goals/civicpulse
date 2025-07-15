@@ -8,14 +8,14 @@ const ChatPage = () => {
   const [threadId, setThreadId] = useState(null);
 
   return (
-    <div className="flex">
+    <div className="geminiAi">
       <Sidebar
         userId={user.uid}
         currentThreadId={threadId}
         onSelectThread={setThreadId}
         onNewChat={() => setThreadId(null)}
       />
-      <div className="flex-1">
+      <div className="geminiWind">
         <ChatWindow
           userId={user.uid}
           key={threadId || "new"}

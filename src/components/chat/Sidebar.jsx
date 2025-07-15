@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { fetchThreads } from "../../firebase/chatThreads";
 import { formatDistanceToNow } from "date-fns";
 import { deleteDoc, doc } from "firebase/firestore";
+import { MdDelete } from "react-icons/md";
+
 import { db } from "../../firebase/config";
 
 const Sidebar = ({ userId, currentThreadId, onSelectThread, onNewChat }) => {
@@ -33,38 +35,31 @@ const Sidebar = ({ userId, currentThreadId, onSelectThread, onNewChat }) => {
   };
 
   return (
-    <div className="w-64 h-screen overflow-y-auto border-r bg-white flex flex-col">
-      <div className="p-4 border-b flex justify-between items-center">
-        <span className="text-lg font-semibold">🧠 CivicPulse</span>
-        <button
-          onClick={onNewChat}
-          className="text-sm px-2 py-1 border rounded hover:bg-gray-100"
-        >
+    <div className="SideBar" style={{ filter: "invert(1)" }}>
+      <div className="sidehero">
+        <img src="spark.png" alt="GeminiAPi" />
+        <button onClick={onNewChat} className="nchat">
           New Chat
         </button>
       </div>
+      <hr />
 
-      {threads.length === 0 && (
-        <p className="p-4 text-sm text-gray-500">No chats yet.</p>
-      )}
+      {threads.length === 0 && <p className="NoChats">No chats yet.</p>}
 
-      <ul className="flex-1 overflow-auto">
+      <ul className="threads">
         {threads.map((thread) => (
           <li
             key={thread.id}
             className={`group px-3 py-2 border-b text-sm flex justify-between items-start hover:bg-blue-50 ${
-              currentThreadId === thread.id ? "bg-blue-100 font-medium" : ""
+              currentThreadId === thread.id ? "thr" : ""
             }`}
           >
-            <div
-              onClick={() => onSelectThread(thread.id)}
-              className="flex-1 cursor-pointer"
-            >
+            <div onClick={() => onSelectThread(thread.id)} className="th1r">
               <p className="truncate">
                 {thread.title || "Untitled conversation"}
               </p>
               {thread.createdAt?.seconds && (
-                <p className="text-xs text-gray-500">
+                <p className="time">
                   {formatDistanceToNow(
                     new Date(thread.createdAt.seconds * 1000),
                     {
@@ -74,11 +69,8 @@ const Sidebar = ({ userId, currentThreadId, onSelectThread, onNewChat }) => {
                 </p>
               )}
             </div>
-            <button
-              onClick={() => handleDelete(thread.id)}
-              className="text-red-500 text-xs hidden group-hover:inline ml-2"
-            >
-              🗑️
+            <button onClick={() => handleDelete(thread.id)} className="delete">
+              <MdDelete />
             </button>
           </li>
         ))}

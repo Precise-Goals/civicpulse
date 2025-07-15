@@ -4,11 +4,11 @@ const Message = ({ text, sender }) => (
   <div
     className={`mb-4 p-3 rounded-lg max-w-[80%] ${
       sender === "user"
-        ? "ml-auto bg-blue-100 text-right"
-        : "mr-auto bg-gray-100 text-left"
+        ? "usee"
+        : "gemi"
     }`}
   >
-    <p className="text-sm">{text}</p>
+    <p className="txtsa">{text}</p>
   </div>
 );
 

@@ -78,8 +78,8 @@ const ChatWindow = ({ userId, threadId, onNewThread }) => {
   };
 
   return (
-    <div className="flex flex-col h-[80vh] w-full bg-white shadow-md rounded-lg">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="chatWindow">
+      <div className="messages">
         {messages.length === 0 && (
           <SuggestionCards
             onSelect={(text) => {
@@ -91,10 +91,7 @@ const ChatWindow = ({ userId, threadId, onNewThread }) => {
 
         {messages.map((msg, index) =>
           msg.sender === "ai" ? (
-            <div
-              key={index}
-              className="mb-4 p-3 rounded-lg max-w-[80%] mr-auto bg-gray-100 text-left"
-            >
+            <div key={index} className="msgggai">
               <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
           ) : (
@@ -104,21 +101,22 @@ const ChatWindow = ({ userId, threadId, onNewThread }) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t">
-        <div className="flex space-x-2">
+      <div className="inputArea">
+        <div className="seninp">
+          
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)} 
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isLoading) handleSend();
             }}
-            className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Type your message..."
+            className="inputField" 
+            placeholder="Ask me anything"
             disabled={isLoading}
           />
           <Button onClick={() => handleSend()} disabled={isLoading}>
-            {isLoading ? "Sending..." : "Send"}
+            {isLoading ? "Analyzing" : "Send"}
           </Button>
         </div>
       </div>
