@@ -852,3 +852,6 @@ h2.text-2xl.font-bold.mb-4.text-center {
   font-size: 7rem;
   color: white;
 }
+p.abs {
+  color: white;
+}

@@ -41,6 +41,9 @@ const LoginPage = () => {
     >
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
         <img src="spark.png" className="justimg" alt="justnewimage" />
+        <p className="abs" style={{ position: "absolute" }}>
+          As a Test User use test@admin.com as Email and testadmin as Password.
+        </p>
         <h2 className="text-2xl font-bold mb Abi-4 text-center">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="mb-4">
