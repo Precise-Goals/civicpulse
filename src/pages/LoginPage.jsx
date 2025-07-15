@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { auth } from "../firebase/config";
 import Navbar from "../components/common/Navbar";
 import Button from "../components/common/Button";
@@ -31,8 +35,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div
+      className="min-h-screen bg-gray-100 flex items-center justify-center"
+      style={{ position: "relative" }}
+    >
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <img src="spark.png" className="justimg" alt="justnewimage" />
         <h2 className="text-2xl font-bold mb Abi-4 text-center">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="mb-4">
@@ -53,10 +61,11 @@ const LoginPage = () => {
             placeholder="Password"
           />
         </div>
-        <Button onClick={handleEmailLogin} className="w-full mb-2">
+
+        <Button onClick={handleEmailLogin} className="logmail">
           Login with Email
         </Button>
-        <Button onClick={handleGoogleLogin} className="w-full bg-red-500 hover:bg-red-600">
+        <Button onClick={handleGoogleLogin} className="golog">
           Login with Google
         </Button>
         <p className="mt-4 text-center">

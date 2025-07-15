@@ -115,61 +115,66 @@ export default function DashboardPage() {
   if (!user) return <p>Please login to view your dashboard.</p>;
 
   return (
-    <div style={{ maxWidth: 800, margin: "20px auto", padding: 20 }}>
-      <h1 className="text-2xl font-bold mb-2">
-        Dashboard for {user.displayName || user.email}
-      </h1>
+    <div className="lmao">
+      <div className="divdasg">
+        <h1 className="text-2xl font-bold mb-2">
+          Dashboard for {user.displayName || user.email}
+        </h1>
 
-      <section className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">📊 Usage Stats</h2>
-        <ul className="text-sm space-y-1">
-          <li>✅ Blog Posts: {blogCount}</li>
-          <li>💬 Chat Messages: {chatCount}</li>
-        </ul>
-      </section>
+        <section className="mb-6">
+          <ul className="text-sm space-y-1">
+            <li>✅ Blog Posts: {blogCount}</li>
+            <li>💬 Chat Messages: {chatCount}</li>
+          </ul>
+        </section>
 
-      <section className="mb-10">
-        <h3 className="text-lg font-semibold">📈 Blog Usage (Hourly)</h3>
-        <div style={{ height: 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={blogHistory}>
-              <CartesianGrid strokeDasharray="4 4" />
-              <XAxis dataKey="hour" />
-              <YAxis allowDecimals={false} domain={[0,75]} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke="#8884d8"
-                name="Blogs"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <section className="charts">
+          <div className="blo">
+            <h3 className="text-lg font-semibold">📈 Blog Usage</h3>
+            <div style={{ height: 300 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={blogHistory}>
+                  <CartesianGrid strokeDasharray="4 4" />
+                  <XAxis dataKey="hour" />
+                  <YAxis allowDecimals={false} domain={[0, 75]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#8884d8"
+                    name="Blogs"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
-        <h3 className="text-lg font-semibold mt-8">📈 Chat Usage (Hourly)</h3>
-        <div style={{ height: 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chatHistory}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" />
-              <YAxis allowDecimals={false} domain={[0,50]} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke="#34d399"
-                name="Chats"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
+          <div className="ch">
+            <h3 className="text-lg font-semibold mt-8">📈 Chat Usage</h3>
+            <div style={{ height: 300 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chatHistory}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis allowDecimals={false} domain={[0, 50]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#34d399"
+                    name="Chats"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+      </div>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-2">📝 Your Review</h2>
+      <section className="ReviewSection">
+        <h2 className="text-lg font-semibold mb-2">Your Reviews</h2>
         {loadingReview ? (
           <p>Loading review...</p>
         ) : (

@@ -14,13 +14,19 @@ const Footer = () => {
         </p>
         <ul className="icons">
           <li className="s-icons">
-            <TfiLinkedin />
+            <a href="https://www.linkedin.com/in/sarthaktpatil/">
+              <TfiLinkedin />
+            </a>
           </li>
           <li className="s-icons">
-            <AiFillInstagram />
+            <a href="https://github.com/Precise-Goals">
+              <FaGithubSquare />
+            </a>
           </li>
           <li className="s-icons">
-            <FaGithubSquare />
+            <a href="https://www.instagram.com/sarthakpatil.in/">
+              <AiFillInstagram />
+            </a>
           </li>
         </ul>
         <p>Made by Sarthak Patil for GDG Application @2025</p>
