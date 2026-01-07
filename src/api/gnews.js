@@ -1,6 +1,7 @@
 import { DEFAULT_TOPIC } from "../utils/constants";
+// import process from "process";
 
-const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
+const apiKey = "b2923d8c391df0bf64424d4db99c3e16";
 
 export const fetchNews = async (topic = DEFAULT_TOPIC) => {
   try {
