@@ -1,24 +1,58 @@
-import { GNEWS_API_URL, DEFAULT_TOPIC } from "../utils/constants";
+import { DEFAULT_TOPIC } from "../utils/constants";
 
 const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
 
 export const fetchNews = async (topic = DEFAULT_TOPIC) => {
   try {
+    // In production, try to use serverless function first
+    // In development, use direct API call (with CORS limitations)
+    const useServerless = import.meta.env.PROD;
 
-    // Clean and encode query
-    const cleanTopic = topic.trim().slice(0, 90); // avoid overly long queries
-    // top-headlines?category=general&lang=en&country=us&max=10
-    const url = `https://gnews.io/api/v4/top-headlines?category=Economy&lang=en&country=in&max=5&apikey=${apiKey}`;
-    // `${GNEWS_API_URL}?q=${encodeURIComponent(
-    //   cleanTopic
-    // )}&lang=en&max=5&token=${apiKey}`;
+    if (useServerless) {
+      // Use serverless function in production
+      const params = new URLSearchParams({
+        category: 'Economy',
+        lang: 'en',
+        country: 'in',
+        max: '5'
+      });
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Failed to fetch news");
+      if (topic && topic !== DEFAULT_TOPIC) {
+        params.set('topic', topic.trim().slice(0, 90));
+      }
 
-    const data = await response.json();
-    console.log("Fetched news data:", data);
-    return data.articles;
+      const url = `/api/news?${params.toString()}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Serverless function error:", errorData);
+        throw new Error(errorData.error || "Failed to fetch news from API");
+      }
+
+      const data = await response.json();
+      console.log("Fetched news data from serverless:", data);
+      return data.articles || [];
+    } else {
+      // Development: Direct API call (may have CORS issues in browser)
+      // Note: This will work if running through a local proxy or server
+      if (!apiKey) {
+        console.error("VITE_GNEWS_API_KEY not found in environment");
+        return [];
+      }
+
+      const url = `https://gnews.io/api/v4/top-headlines?category=Economy&lang=en&country=in&max=5&apikey=${apiKey}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error("GNews API error:", response.status);
+        throw new Error("Failed to fetch news");
+      }
+
+      const data = await response.json();
+      console.log("Fetched news data:", data);
+      return data.articles || [];
+    }
   } catch (error) {
     console.error("Error fetching news:", error);
     return [];
